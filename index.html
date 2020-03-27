@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>2020 PMC Eyewitness Line-up Experiment</title>
+        <script src="js/serverComm.js" type="text/javascript"></script>
+        <script src="http://code.jquery.com/jquery-3.4.1.min.js"
+                integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+                crossorigin="anonymous"></script>
+        <script src="js/jspsych.js"></script>
+        <script src="js/plugins/jspsych-call-function.js"></script>
+        <script src="js/plugins/jspsych-html-keyboard-response.js"></script>
+        <script src="js/plugins/jspsych-image-keyboard-response.js"></script>
+        <!--script src="js/welcome.js"></script-->
+        <link href="css/jspsych.css" rel="stylesheet" type="text/css"></link>
+    </head>
+    <body></body>
+
+    <script>
+// REFERENCE
+//      Keycode values:
+//          "49" = "1", "50" = "2", "51" = "3", "52" = "4", = NO
+//          "53" = "5", "54" = "6", "55" = "7", "56" = "8", = YES
+//          ... Number(jsPsych.pluginAPI.convertKeyCodeToKeyCharacter("51"))
+//          "70" = "f" = NO, "74" = "k" = YES
+//          Number("70") - 70, Number("74") - 73
+//
+//  Data file = 686 Lines per subject
+//  Completion Time = 15-20 minutes
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+/*          SET UP EXPERIMENTAL PARAMETERS */
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+    /* Experiment timelines  */
+    var debug = false;
+
+    var experiment_timeline = [];
+    var yn_no_deadline_timeline = [];
+    var yn_deadline_timeline = [];
+    var confidence_no_deadline_timeline = [];
+    var confidence_deadline_timeline = [];
+    var current_probe = [];
+    var sample_lineup = ["", "", "", "", ""];
+    
+    var subject_id = Math.floor(Math.random()*100000);
+
+    var nBlocks = 4; //4 
+    var nTrialsPerBlock = 16; // 16 Set to n+3; first three trials are practice
+    var nPracticeTrials = 3; // 3
+    var nTrue  = nTrialsPerBlock/2; 
+    var nFalse = nTrialsPerBlock/2;
+    var iti = 500; // intertrial interval 500
+
+    var deadline = 3000;     
+    var no_deadline = 60000; 
+
+    // 1 = yn_no_deadline, 2 = yn_deadline, 3 = confidence_no_deadline, 4 = confidence_deadline
+    var conditions = [1,2,3,4]; 
+
+
+    // Add data to all trials
+    jsPsych.data.addProperties({
+        subject: subject_id,
+        deadline: deadline,
+        no_deadline: no_deadline
+    });
+
+
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+/*          IMAGE FILE NAMES                               */
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+    /* Preload images  */
+    var faces = ['./stims/h1.bmp', './stims/h2.bmp', './stims/h3.bmp', './stims/h4.bmp', './stims/h5.bmp', './stims/h6.bmp', './stims/h7.bmp', './stims/h8.bmp', './stims/h9.bmp', './stims/h10.bmp', './stims/h11.bmp', './stims/h12.bmp', './stims/h13.bmp', './stims/h14.bmp', './stims/h15.bmp', './stims/h16.bmp',  './stims/h17.bmp', './stims/h18.bmp', './stims/h19.bmp', './stims/h21.bmp', './stims/h22.bmp', './stims/h23.bmp', './stims/h24.bmp', './stims/h25.bmp', './stims/h26.bmp', './stims/h27.bmp', './stims/h28.bmp', './stims/h29.bmp', './stims/h30.bmp', './stims/h31.bmp', './stims/h32.bmp', './stims/h33.bmp', './stims/h34.bmp', './stims/h35.bmp', './stims/h36.bmp', './stims/h37.bmp', './stims/h38.bmp', './stims/h39.bmp',  './stims/h40.bmp', './stims/h41.bmp', './stims/h42.bmp', './stims/h43.bmp', './stims/h44.bmp', './stims/h45.bmp', './stims/h46.bmp', './stims/h47.bmp', './stims/h48.bmp', './stims/h49.bmp', './stims/h50.bmp',  './stims/h51.bmp', './stims/h52.bmp', './stims/h53.bmp', './stims/h54.bmp'];
+
+    var masks = ['./stims/mask1.bmp', './stims/mask2.bmp', './stims/mask3.bmp', './stims/mask4.bmp', './stims/mask5.bmp', './stims/mask6.bmp', './stims/mask7.bmp', './stims/mask8.bmp', './stims/mask9.bmp', './stims/mask10.bmp', './stims/mask11.bmp', './stims/mask12.bmp', './stims/mask13.bmp', './stims/mask14.bmp', './stims/mask15.bmp', './stims/mask16.bmp',  './stims/mask17.bmp', './stims/mask18.bmp', './stims/mask19.bmp', './stims/mask21.bmp', './stims/mask22.bmp', './stims/mask23.bmp', './stims/mask24.bmp', './stims/mask25.bmp', './stims/mask26.bmp', './stims/mask27.bmp', './stims/mask28.bmp', './stims/mask29.bmp', './stims/mask30.bmp', './stims/mask31.bmp', './stims/mask32.bmp', './stims/mask33.bmp', './stims/mask34.bmp', './stims/mask35.bmp', './stims/mask36.bmp', './stims/mask37.bmp', './stims/mask38.bmp', './stims/mask39.bmp',  './stims/mask40.bmp', './stims/mask41.bmp', './stims/mask42.bmp', './stims/mask43.bmp', './stims/mask44.bmp', './stims/mask45.bmp', './stims/mask46.bmp', './stims/mask47.bmp', './stims/mask48.bmp', './stims/mask49.bmp', './stims/mask50.bmp',  './stims/mask51.bmp', './stims/mask52.bmp', './stims/mask53.bmp', './stims/mask54.bmp'];
+
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+/*          SET UP INSTRUCTIONS                            */
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */ 
+    var welcome = {
+      type: "html-keyboard-response",
+      stimulus: "<p>Welcome to the Perception, Memory & Cognition Lab Report Experiment.</p>" + "<p>Press any key to begin.</p>"
+    };
+
+    var start_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>This experiment consists of four short blocks of eyewitness lineup identification.</p>" +
+      "<p>On each trial, you will first be shown a target face " +
+      "then you will be shown a sequential line up, " + "with each potential suspect shown one at a time.</p>" +
+      "<p>For each potential suspect, you will be asked to determine whether it matches the target face or not</p>" +
+      "<p><u>The target may or may not appear in the lineup.</u></p>" + "<p> Please read the instructions for each section carefully.</p>" +
+      "<p>Press any key to begin.</p>"
+    };
+
+    /* yn_no_deadline Block timeline */
+    var yn_no_deadline_start_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>In this block, you will be shown a target face, and then asked to make a <u>yes or no</u> decision about each of the faces in the lineup.</p>" +
+      "<p>You will be shown a face along with the following prompt:</p>" +
+      "<p>Was this face the target face? <F = NO | J = YES></p>" +
+      "<p>You should press F for NO and J for YES</p>" +
+      "<p>There will be " + String(nPracticeTrials) + " practice trials and " + String(nTrialsPerBlock-nPracticeTrials) + " experimental trials.</p>" +
+      "<p>Please rest your index fingers on the F and J keys.</p>" +
+      "<p>Press any key to begin.</p>"
+    };
+
+    /* yn_deadline Block timeline */
+    var yn_deadline_start_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>In this block, you will be shown a target face, and then asked to make a <u>yes or no</u> decision about each of the faces in the lineup.</p>" +
+      "<p>You will be shown a face along with the following prompt:</p>" +
+      "<p>Was this face the target face? <F = NO | J = YES></p>" +
+      "<p>You should press F for NO and J for YES</p>" +
+      "<p><b>You will have " + String(deadline/1000) + " seconds to respond.</b></p>" +
+      "<p>There will be " + String(nPracticeTrials) + " practice trials and " + String(nTrialsPerBlock-nPracticeTrials) + " experimental trials.</p>" +
+      "<p>Please rest your index fingers on the F and J keys.</p>" +
+      "<p>Press any key to begin.</p>"
+    };
+
+    /* confidence_no_deadline Block timeline */
+    var confidence_no_deadline_start_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>In this block, you will be shown a target face, and then asked to make a <u>confidence judgement</u> decision about each of the faces in the lineup.</p>" +
+      "<p>You will be shown a face along with the following prompt:</p>" +
+      "<p>Was this face the target face?</p>" +  
+      "<p><1 = Very Sure NO | 4 = Uncertain NO | 5 = Uncertain YES | 8 = Very Sure YES></p>" +
+      "<p>You should press a number 1 to 8 indicating your confidence</p>" + 
+      "<p>Numbers 4 or less indicate NO. Numbers 5 or more indicate YES.</p>" + 
+      "<p>More extreme numbers (i.e., 1 or 8) indicate higher confidence.</p>" + 
+      "<p>There will be " + String(nPracticeTrials) + " practice trials and " + String(nTrialsPerBlock-nPracticeTrials) + " experimental trials.</p>" +
+      "<p>Please rest your fingers on the number keys from 1 to 8.</p>" +
+      "<p>Press any key to begin.</p>"
+    };
+
+    /* confidence_deadline Block timeline */
+    var confidence_deadline_start_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>In this block, you will be shown a target face, and then asked to make a <u>confidence judgement</u> decision about each of the faces in the lineup.</p>" +
+      "<p>You will be shown a face along with the following prompt:</p>" +
+      "<p>Was this face the target face?</p>" +  
+      "<p><1 = Very Sure NO | 4 = Uncertain NO | 5 = Uncertain YES | 8 = Very Sure YES></p>" +
+      "<p>You should press a number 1 to 8 indicating your confidence</p>" + 
+      "<p>Numbers 4 or less indicate NO. Numbers 5 or more indicate YES.</p>" + 
+      "<p>More extreme numbers (i.e., 1 or 8) indicate higher confidence.</p>" + 
+      "<p><b>You will have " + String(deadline/1000) + " seconds to respond.</b></p>" +
+      "<p>There will be " + String(nPracticeTrials) + " practice trials and " + String(nTrialsPerBlock-nPracticeTrials) + " experimental trials.</p>" +
+      "<p>Please rest your fingers on the number keys from 1 to 8.</p>" +
+      "<p>Press any key to begin.</p>"
+    };
+
+    var start_practice_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>Press any key to start the practice trials.</p>"
+    };
+
+    var end_practice_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>Ok, ready to begin the experimental block? Press any key to start.</p>"
+    };
+
+    var end_experiment_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>Thank you for your participation. You may close your browser window.</p>"
+    };
+
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+/*          FIXATION CROSS AND PROBE EVENTS                */
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+    /* Trial timeline  */
+    /* Fixation, probe, mask, lineup1, response, ...., lineup5, response */
+
+    var fixation = {
+        type: 'html-keyboard-response',
+        stimulus: '<div style="font-size:60px;">+</div>',
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 1000,
+        data: {trial_event: 'fixation'}
+    }
+
+    var probe = {
+        type: 'image-keyboard-response',
+        stimulus: jsPsych.timelineVariable('probe_face'),
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 250,
+        data: {trial_event: 'probe'},
+        on_finish: function(data){
+            current_probe.pop();
+            current_probe.push(data.stimulus);   //also jsPsych.timelineVariable('probe_face') 
+            if (debug){console.log("Probe " + current_probe);};
+            sample_lineup = jsPsych.randomization.sampleWithoutReplacement(faces.filter(function(x) { return x !== current_probe[0]}), 5);
+            return current_probe, sample_lineup
+        }
+    }
+
+    var mask = {
+        type: 'image-keyboard-response',
+        stimulus: jsPsych.timelineVariable('mask_face'),
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 500,
+        data: {trial_event: 'mask'}
+    } 
+
+    var probe_stimulus = [
+        {probe_face: 
+            function(){
+                return jsPsych.randomization.sampleWithoutReplacement(faces, 1)[0];
+            }
+        }
+    ];
+
+    var mask_stimulus = [
+        {mask_face: 
+            function(){
+                return jsPsych.randomization.sampleWithoutReplacement(masks, 1)[0];
+            }
+        }
+    ];
+
+    var show_probe = {
+        timeline: [fixation, probe],
+        timeline_variables: probe_stimulus
+    }
+
+    var show_mask = {
+        timeline: [mask],
+        timeline_variables: mask_stimulus
+    }
+
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+/*          SEQUENTIAL LINEUP CONDITIONS                   */
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+
+    /* Select lineup members at random */
+    var yn_lineup_no_deadline = {
+        type: "image-keyboard-response",
+        stimulus: jsPsych.timelineVariable('lineup_face'),
+        choices: ['f', 'j'],
+        prompt: "<p>Does this suspect match the target? (f = NO, j = YES)</p>",
+        data: {trial_event: 'lineup', condition_name: 'yn_no_deadline'},
+        trial_duration: no_deadline,
+        on_finish: function(data){
+            if (data.stimulus != current_probe){
+                data.lineup_type = "foil";
+            } else {
+                data.lineup_type = "target";
+            };
+
+            if (data.rt == null || data.rt > data.no_deadline){
+                data.too_slow = 1;
+                data.response = 99;
+                data.correct = 99;
+            } else {
+                data.too_slow = 0;
+                if (data.key_press == 70){
+                    data.response = 0;
+                    if (data.lineup_type == "foil"){ // Response is no, lineup is foil
+                        data.correct = 1;
+                    } else {
+                        data.correct = 0; // Response is no, lineup is target
+                    }
+                } else {
+                    data.response = 1;
+                    if (data.lineup_type == "foil"){ // Response is yes, lineup is foil
+                        data.correct = 0;
+                    } else {
+                        data.correct = 1; // Response is yes, lineup is target
+                    }
+                }
+            }
+        }         
+    } 
+
+    var yn_lineup_deadline = {
+        type: "image-keyboard-response",
+        stimulus: jsPsych.timelineVariable('lineup_face'),
+        choices: ['f', 'j'],
+        prompt: "<p>Does this suspect match the target? (f = NO, j = YES)</p>",
+        data: {trial_event: 'lineup', condition_name: 'yn_deadline'},
+        trial_duration: deadline,
+        on_finish: function(data){
+            if (data.stimulus != current_probe){
+                data.lineup_type = "foil";
+            } else {
+                data.lineup_type = "target";
+            };
+
+            if (data.rt == null || data.rt > data.deadline){
+                data.too_slow = 1;
+                data.response = 99;
+                data.correct = 99;
+        
+                // Display Too Slow Feedback
+
+            } else {
+                data.too_slow = 0;
+                if (data.key_press == 70){
+                    data.response = 0;
+                    if (data.lineup_type == "foil"){ // Response is no, lineup is foil
+                        data.correct = 1;
+                    } else {
+                        data.correct = 0; // Response is no, lineup is target
+                    }
+                } else {
+                    data.response = 1;
+                    if (data.lineup_type == "foil"){ // Response is yes, lineup is foil
+                        data.correct = 0;
+                    } else {
+                        data.correct = 1; // Response is yes, lineup is target
+                    }
+                }
+            }
+        }
+    } 
+
+    var confidence_lineup_no_deadline = {
+        type: "image-keyboard-response",
+        stimulus: jsPsych.timelineVariable('lineup_face'),
+        choices: ['1', '2', '3', '4', '5', '6', '7', '8'],
+        prompt: "<p>Was this face the target face?</p>" +  
+                "<p><1 = Very Sure NO | 4 = Uncertain NO | 5 = Uncertain YES |8 = Very Sure YES></p>", 
+        data: {trial_event: 'lineup', condition_name: 'confidence_no_deadline'},
+        trial_duration: no_deadline,
+        on_finish: function(data){
+            if (data.stimulus != current_probe){
+                data.lineup_type = "foil";
+            } else {
+                data.lineup_type = "target";
+            };
+
+            if (data.rt == null || data.rt > data.no_deadline){
+                data.too_slow = 1;
+                data.response = 99;
+                data.correct = 99;
+            } else {
+                data.too_slow = 0;
+                data.response = Number(jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press));
+                if (data.lineup_type == "foil" && data.response <= 4){ // Response is no, lineup is foil  
+                    data.correct = 1;
+                } else if (data.lineup_type == "target" && data.response >= 5){ //Response is yes, line up is target
+                    data.correct = 1;
+                } else {
+                        data.correct = 0; // Response is no, lineup is target
+               }
+            };
+        }          
+    } 
+
+    var confidence_lineup_deadline = {
+        type: "image-keyboard-response",
+        stimulus: jsPsych.timelineVariable('lineup_face'),
+        choices: ['1', '2', '3', '4', '5', '6', '7', '8'],
+        prompt: "<p>Was this face the target face?</p>" +  
+                "<p><1 = Very Sure NO | 4 = Uncertain NO | 5 = Uncertain YES |8 = Very Sure YES></p>",
+        data: {trial_event: 'lineup', condition_name: 'confidence_deadline' },
+        trial_duration: deadline,
+        on_finish: function(data){
+            if (data.stimulus != current_probe){
+                data.lineup_type = "foil";
+            } else {
+                data.lineup_type = "target";
+            };
+
+            if (data.rt == null || data.rt > data.deadline){
+                data.too_slow = 1;
+                data.response = 99;
+                data.correct = 99;
+            } else {
+                data.too_slow = 0;
+                data.response = Number(jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press));
+                if (data.lineup_type == "foil" && data.response <= 4){ // Response is no, lineup is foil  
+                    data.correct = 1;
+                } else if (data.lineup_type == "target" && data.response >= 5){ //Response is yes, line up is target
+                    data.correct = 1;
+                } else {
+                        data.correct = 0; // Response is no, lineup is target
+               }
+            };
+        }          
+    } 
+
+    var feedback = {
+        type: 'html-keyboard-response',
+        stimulus: function(){
+            var last_trial_too_slow = jsPsych.data.get().filter({trial_event: "lineup"}).last(1).values()[0].too_slow;
+                if(last_trial_too_slow){
+                    return "<p>Too Slow! Respond Faster!</p>";
+                } else {
+                    return "";
+                }
+            }, 
+        choices: jsPsych.NO_KEYS,
+        data: {trial_event: 'feedback'},
+        trial_duration: function(){
+            var last_trial_too_slow = jsPsych.data.get().filter({trial_event: "lineup"}).last(1).values()[0].too_slow;
+            if(last_trial_too_slow){
+                return 1000;
+            } else {
+                return 0;
+            }
+        }
+    }    
+
+
+    if (debug) {
+        var lineup_stimuli_tp = [
+            {lineup_face:  function(){console.log("Lineup 1 " + sample_lineup[0]); return sample_lineup[0];}},
+            {lineup_face:  function(){console.log("Lineup 2 " + sample_lineup[1]); return sample_lineup[1];}},
+            {lineup_face:  function(){console.log("Lineup 3 " + sample_lineup[2]); return sample_lineup[2];}},
+            {lineup_face:  function(){console.log("Lineup 4 " + sample_lineup[3]); return sample_lineup[3];}},
+            {lineup_face:  function(){console.log("Lineup 5 " + current_probe[0]); return current_probe[0];}}         
+        ];
+        
+        var lineup_stimuli_ta = [
+            {lineup_face:  function(){console.log("Lineup 1 " + sample_lineup[0]); return sample_lineup[0];}},
+            {lineup_face:  function(){console.log("Lineup 2 " + sample_lineup[1]); return sample_lineup[1];}},
+            {lineup_face:  function(){console.log("Lineup 3 " + sample_lineup[2]); return sample_lineup[2];}},
+            {lineup_face:  function(){console.log("Lineup 4 " + sample_lineup[3]); return sample_lineup[3];}},
+            {lineup_face:  function(){console.log("Lineup 5 " + sample_lineup[4]); return sample_lineup[4];}}         
+        ];
+    } else {
+        var lineup_stimuli_tp = [
+                {lineup_face:  function(){return sample_lineup[0];}},
+                {lineup_face:  function(){return sample_lineup[1];}},
+                {lineup_face:  function(){return sample_lineup[2];}},
+                {lineup_face:  function(){return sample_lineup[3];}},
+                {lineup_face:  function(){return current_probe[0];}}         
+        ];
+            
+        var lineup_stimuli_ta = [
+            {lineup_face:  function(){return sample_lineup[0];}},
+            {lineup_face:  function(){return sample_lineup[1];}},
+            {lineup_face:  function(){return sample_lineup[2];}},
+            {lineup_face:  function(){return sample_lineup[3];}},
+            {lineup_face:  function(){return sample_lineup[4];}}
+        ];
+    };
+
+    var yn_no_deadline_trial_tp = {
+        timeline: [yn_lineup_no_deadline, feedback],
+        timeline_variables: lineup_stimuli_tp,
+        randomize_order: true
+    }
+
+    var yn_no_deadline_trial_ta = {
+        timeline: [yn_lineup_no_deadline, feedback],
+        timeline_variables: lineup_stimuli_ta,
+        randomize_order: true
+    }
+
+    var yn_deadline_trial_tp = {
+        timeline: [yn_lineup_deadline, feedback],
+        timeline_variables: lineup_stimuli_tp,
+        randomize_order: true
+    }
+
+    var yn_deadline_trial_ta = {
+        timeline: [yn_lineup_deadline, feedback],
+        timeline_variables: lineup_stimuli_ta,
+        randomize_order: true
+    }
+
+    var conf_no_deadline_trial_tp = {
+        timeline: [confidence_lineup_no_deadline, feedback],
+        timeline_variables: lineup_stimuli_tp,
+        randomize_order: true
+    }
+
+    var conf_no_deadline_trial_ta = {
+        timeline: [confidence_lineup_no_deadline, feedback],
+        timeline_variables: lineup_stimuli_ta,
+        randomize_order: true
+    }
+
+    var conf_deadline_trial_tp = {
+        timeline: [confidence_lineup_deadline, feedback],
+        timeline_variables: lineup_stimuli_tp,
+        randomize_order: true
+    }
+
+    var conf_deadline_trial_ta = {
+        timeline: [confidence_lineup_deadline, feedback],
+        timeline_variables: lineup_stimuli_ta,
+        randomize_order: true
+    }
+
+
+
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+/*          SET UP EXPERIMENTAL TIMELINE                   */
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+    /* Set up experiment timeline */
+    experiment_timeline.push(welcome);
+    experiment_timeline.push(start_instructions);
+
+    // Randomize conditions
+    var blockTypes = jsPsych.randomization.shuffle(conditions);   
+
+    // Counters
+    var i;
+    var j;
+
+    // Sample conditions and trials
+    for (i = 0; i < nBlocks; i++) {
+        // Shuffle order of target present and target absent lineups
+        var trialOrder = jsPsych.randomization.shuffle(jsPsych.randomization.sampleWithReplacement([true], nTrue).concat( jsPsych.randomization.sampleWithReplacement([false], nFalse)));
+        
+        // Select condition
+        if (blockTypes[i] == 1) { // yn_no_deadline
+            // Load conditions instructions
+            experiment_timeline.push(yn_no_deadline_start_instructions);
+            experiment_timeline.push(start_practice_instructions);
+
+            for (j = 0; j < nTrialsPerBlock; j++) {
+                // Load end practice trial instructions
+                if (j == nPracticeTrials){
+                    experiment_timeline.push(end_practice_instructions);
+                }
+
+                // Load probe and mask
+                experiment_timeline.push(show_probe);
+                experiment_timeline.push(show_mask);
+
+                // Load lineup
+                if (trialOrder[j] ) { // target present
+                    experiment_timeline.push(yn_no_deadline_trial_tp);
+                } else { // target absent
+                    experiment_timeline.push(yn_no_deadline_trial_ta);
+                }
+            }
+        } else if (blockTypes[i] == 2) { // yn_deadline
+            // Load condition instructions
+            experiment_timeline.push(yn_deadline_start_instructions);
+            experiment_timeline.push(start_practice_instructions);
+
+            for (j = 0; j < nTrialsPerBlock; j++) {
+                // Load end practice instructions
+                if (j == nPracticeTrials){
+                    experiment_timeline.push(end_practice_instructions);
+                }
+
+                // Load probe and mask
+                experiment_timeline.push(show_probe);
+                experiment_timeline.push(show_mask);
+
+                // Load lineup
+                if (trialOrder[j] ) { // target present
+                    experiment_timeline.push(yn_deadline_trial_tp);
+                } else { // target absent
+                    experiment_timeline.push(yn_deadline_trial_ta);
+                }
+            }
+        } else if (blockTypes[i] == 3) {  // conf_no_deadline
+            // Load condition instructions
+            experiment_timeline.push(confidence_no_deadline_start_instructions);
+            experiment_timeline.push(start_practice_instructions);
+
+            for (j = 0; j < nTrialsPerBlock; j++) {
+                // Load end practice instructions
+                if (j == nPracticeTrials){
+                    experiment_timeline.push(end_practice_instructions);
+                }
+
+                // Load probe and mask
+                experiment_timeline.push(show_probe);
+                experiment_timeline.push(show_mask);
+
+                // Load lineup
+                if (trialOrder[j] ) { // target present
+                    experiment_timeline.push(conf_no_deadline_trial_tp);
+                } else { // target absent
+                    experiment_timeline.push(conf_no_deadline_trial_ta);
+                }
+            }
+        } else {  // conf_deadline
+            // Load condition instructions
+            experiment_timeline.push(confidence_deadline_start_instructions);
+            experiment_timeline.push(start_practice_instructions);
+
+            for (j = 0; j < nTrialsPerBlock; j++) {
+                // Load end practice instructions
+                if (j == nPracticeTrials){
+                    experiment_timeline.push(end_practice_instructions);
+                }
+
+                // Load probe and mask
+                experiment_timeline.push(show_probe);
+                experiment_timeline.push(show_mask);
+
+                // Load lineup
+                if (trialOrder[j] ) { // target present
+                    experiment_timeline.push(conf_deadline_trial_tp);
+                } else { // target absent
+                    experiment_timeline.push(conf_deadline_trial_ta);
+                }
+            }
+        }      
+    }
+
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+/*          SAVE DATA AND END EXPERIMENT                   */
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+
+    var save_data = {
+        type: 'call-function',
+        func: function(){
+        serverComm.save_data(jsPsych.data.get().values());
+      }
+    }
+    experiment_timeline.push(save_data);
+    experiment_timeline.push(end_experiment_instructions);
+
+    /* Initialise experiment */
+    jsPsych.init({
+        timeline: experiment_timeline,
+        preload_images: faces.concat(masks),
+        default_iti: iti, 
+        use_webaudio: false
+        }
+    );
+    </script>
+</html>
+
