@@ -602,6 +602,7 @@
         type: 'call-function',
         func: function(){
         serverComm.save_data(jsPsych.data.get().values());
+//            serverComm.save_data(jsPsych.data.get().filter({trial_event: "trial_stimulus"}).values());
       }
     }
     experiment_timeline.push(save_data);
