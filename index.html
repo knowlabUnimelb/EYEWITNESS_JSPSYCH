@@ -7,6 +7,7 @@
                 integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
                 crossorigin="anonymous"></script>
         <script src="js/jspsych.js"></script>
+        <script src="js/plugins/jspsych-survey-text.js"></script>
         <script src="js/plugins/jspsych-call-function.js"></script>
         <script src="js/plugins/jspsych-html-keyboard-response.js"></script>
         <script src="js/plugins/jspsych-image-keyboard-response.js"></script>
@@ -26,6 +27,8 @@
 //
 //  Data file = 686 Lines per subject
 //  Completion Time = 15-20 minutes
+// 
+//  TODO: Write out data after every block
 /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
 /*          SET UP EXPERIMENTAL PARAMETERS */
 /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
@@ -77,7 +80,10 @@
 /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */ 
     var welcome = {
       type: "html-keyboard-response",
-      stimulus: "<p>Welcome to the Perception, Memory & Cognition Lab Report Experiment.</p>" + "<p>Press any key to begin.</p>"
+      stimulus: "<p>Welcome to the Perception, Memory & Cognition Lab Report Experiment.</p>" + 
+                "<p>Please put aside all distractions while completing the experiment.</p>" + 
+                "<p>Press any key to begin.</p>",
+        data: {trial_event: 'instructions'}
     };
 
     var start_instructions = {
@@ -87,7 +93,15 @@
       "then you will be shown a sequential line up, " + "with each potential suspect shown one at a time.</p>" +
       "<p>For each potential suspect, you will be asked to determine whether it matches the target face or not</p>" +
       "<p><u>The target may or may not appear in the lineup.</u></p>" + "<p> Please read the instructions for each section carefully.</p>" +
-      "<p>Press any key to begin.</p>"
+      "<p>Press any key to begin.</p>",
+        data: {trial_event: 'instructions'}
+    };
+
+    var handedness_instructions = {
+      type: "html-keyboard-response",
+      stimulus: "<p>Before we start, we are going to ask some questions about you.</p>" +
+      "<p>Press any key to begin.</p>",
+        data: {trial_event: 'instructions'}
     };
 
     /* yn_no_deadline Block timeline */
@@ -99,7 +113,8 @@
       "<p>You should press F for NO and J for YES</p>" +
       "<p>There will be " + String(nPracticeTrials) + " practice trials and " + String(nTrialsPerBlock-nPracticeTrials) + " experimental trials.</p>" +
       "<p>Please rest your index fingers on the F and J keys.</p>" +
-      "<p>Press any key to begin.</p>"
+      "<p>Press any key to begin.</p>",
+        data: {trial_event: 'instructions'}
     };
 
     /* yn_deadline Block timeline */
@@ -112,7 +127,8 @@
       "<p><b>You will have " + String(deadline/1000) + " seconds to respond.</b></p>" +
       "<p>There will be " + String(nPracticeTrials) + " practice trials and " + String(nTrialsPerBlock-nPracticeTrials) + " experimental trials.</p>" +
       "<p>Please rest your index fingers on the F and J keys.</p>" +
-      "<p>Press any key to begin.</p>"
+      "<p>Press any key to begin.</p>",
+        data: {trial_event: 'instructions'}
     };
 
     /* confidence_no_deadline Block timeline */
@@ -121,13 +137,14 @@
       stimulus: "<p>In this block, you will be shown a target face, and then asked to make a <u>confidence judgement</u> decision about each of the faces in the lineup.</p>" +
       "<p>You will be shown a face along with the following prompt:</p>" +
       "<p>Was this face the target face?</p>" +  
-      "<p><1 = Very Sure NO | 4 = Uncertain NO | 5 = Uncertain YES | 8 = Very Sure YES></p>" +
+      "<p><1 = Very Sure NO <--> 4 = Uncertain NO <--> 5 = Uncertain YES <--> 8 = Very Sure YES></p>" +
       "<p>You should press a number 1 to 8 indicating your confidence</p>" + 
       "<p>Numbers 4 or less indicate NO. Numbers 5 or more indicate YES.</p>" + 
       "<p>More extreme numbers (i.e., 1 or 8) indicate higher confidence.</p>" + 
       "<p>There will be " + String(nPracticeTrials) + " practice trials and " + String(nTrialsPerBlock-nPracticeTrials) + " experimental trials.</p>" +
       "<p>Please rest your fingers on the number keys from 1 to 8.</p>" +
-      "<p>Press any key to begin.</p>"
+      "<p>Press any key to begin.</p>",
+        data: {trial_event: 'instructions'}
     };
 
     /* confidence_deadline Block timeline */
@@ -136,29 +153,33 @@
       stimulus: "<p>In this block, you will be shown a target face, and then asked to make a <u>confidence judgement</u> decision about each of the faces in the lineup.</p>" +
       "<p>You will be shown a face along with the following prompt:</p>" +
       "<p>Was this face the target face?</p>" +  
-      "<p><1 = Very Sure NO | 4 = Uncertain NO | 5 = Uncertain YES | 8 = Very Sure YES></p>" +
+      "<p><1 = Very Sure NO <--> 4 = Uncertain NO <--> 5 = Uncertain YES <--> 8 = Very Sure YES></p>" +
       "<p>You should press a number 1 to 8 indicating your confidence</p>" + 
       "<p>Numbers 4 or less indicate NO. Numbers 5 or more indicate YES.</p>" + 
       "<p>More extreme numbers (i.e., 1 or 8) indicate higher confidence.</p>" + 
       "<p><b>You will have " + String(deadline/1000) + " seconds to respond.</b></p>" +
       "<p>There will be " + String(nPracticeTrials) + " practice trials and " + String(nTrialsPerBlock-nPracticeTrials) + " experimental trials.</p>" +
       "<p>Please rest your fingers on the number keys from 1 to 8.</p>" +
-      "<p>Press any key to begin.</p>"
+      "<p>Press any key to begin.</p>",
+        data: {trial_event: 'instructions'}
     };
 
     var start_practice_instructions = {
       type: "html-keyboard-response",
-      stimulus: "<p>Press any key to start the practice trials.</p>"
+      stimulus: "<p>Press any key to start the practice trials.</p>",
+        data: {trial_event: 'instructions'}
     };
 
     var end_practice_instructions = {
       type: "html-keyboard-response",
-      stimulus: "<p>Ok, ready to begin the experimental block? Press any key to start.</p>"
+      stimulus: "<p>Ok, ready to begin the experimental block? Press any key to start.</p>",
+        data: {trial_event: 'instructions'}
     };
 
     var end_experiment_instructions = {
       type: "html-keyboard-response",
-      stimulus: "<p>Thank you for your participation. You may close your browser window.</p>"
+      stimulus: "<p>Thank you for your participation. You may close your browser window.</p>",
+        data: {trial_event: 'instructions'}
     };
 
 /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
@@ -166,6 +187,15 @@
 /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
     /* Trial timeline  */
     /* Fixation, probe, mask, lineup1, response, ...., lineup5, response */
+
+    var sex_age = {
+        type: 'survey-text',
+        questions: [
+            {prompt: "What gender do you identify with?", name: "Gender"}, 
+            {prompt: "How old are you?", name: "Age"}
+        ],
+        data: {trial_event: "sex_age"}
+    };
 
     var fixation = {
         type: 'html-keyboard-response',
@@ -180,7 +210,7 @@
         stimulus: jsPsych.timelineVariable('probe_face'),
         choices: jsPsych.NO_KEYS,
         trial_duration: 250,
-        data: {trial_event: 'probe'},
+        data: {trial_event: 'lineup'},
         on_finish: function(data){
             current_probe.pop();
             current_probe.push(data.stimulus);   //also jsPsych.timelineVariable('probe_face') 
@@ -315,7 +345,7 @@
         stimulus: jsPsych.timelineVariable('lineup_face'),
         choices: ['1', '2', '3', '4', '5', '6', '7', '8'],
         prompt: "<p>Was this face the target face?</p>" +  
-                "<p><1 = Very Sure NO | 4 = Uncertain NO | 5 = Uncertain YES |8 = Very Sure YES></p>", 
+                "<p><1 = Very Sure NO <--> 4 = Uncertain NO <--> 5 = Uncertain YES <--> 8 = Very Sure YES></p>", 
         data: {trial_event: 'lineup', condition_name: 'confidence_no_deadline'},
         trial_duration: no_deadline,
         on_finish: function(data){
@@ -348,7 +378,7 @@
         stimulus: jsPsych.timelineVariable('lineup_face'),
         choices: ['1', '2', '3', '4', '5', '6', '7', '8'],
         prompt: "<p>Was this face the target face?</p>" +  
-                "<p><1 = Very Sure NO | 4 = Uncertain NO | 5 = Uncertain YES |8 = Very Sure YES></p>",
+                "<p><1 = Very Sure NO <--> 4 = Uncertain NO <--> 5 = Uncertain YES <--> 8 = Very Sure YES></p>",
         data: {trial_event: 'lineup', condition_name: 'confidence_deadline' },
         trial_duration: deadline,
         on_finish: function(data){
@@ -489,6 +519,7 @@
     /* Set up experiment timeline */
     experiment_timeline.push(welcome);
     experiment_timeline.push(start_instructions);
+    experiment_timeline.push(sex_age);
 
     // Randomize conditions
     var blockTypes = jsPsych.randomization.shuffle(conditions);   
@@ -601,8 +632,8 @@
     var save_data = {
         type: 'call-function',
         func: function(){
-        serverComm.save_data(jsPsych.data.get().values());
-//            serverComm.save_data(jsPsych.data.get().filter({trial_event: "trial_stimulus"}).values());
+        //serverComm.save_data(jsPsych.data.get().values());
+           serverComm.save_data(jsPsych.data.get().filter([{trial_event: "lineup"}, {trial_event: "sex_age"}]).values());
       }
     }
     experiment_timeline.push(save_data);
